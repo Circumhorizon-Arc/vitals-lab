@@ -97,7 +97,12 @@ export default function LoginPage() {
                                         required
                                         maxLength={4}
                                         value={otp}
-                                        onChange={(e) => setOtp(e.target.value)}
+                                        onChange={(e) => {
+                                            const val = e.target.value;
+                                            if (/^\d*$/.test(val)) {
+                                                setOtp(val);
+                                            }
+                                        }}
                                         className="block w-full appearance-none rounded-md border border-slate-300 px-3 py-2 placeholder-slate-400 shadow-sm focus:border-primary-500 focus:outline-none focus:ring-primary-500 tracking-widest text-center text-lg font-bold"
                                         placeholder="XXXX"
                                     />

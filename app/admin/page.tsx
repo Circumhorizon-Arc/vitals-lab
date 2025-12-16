@@ -50,9 +50,7 @@ export default function AdminPage() {
                     <h1 className="text-2xl font-bold text-slate-900">Dashboard Overview</h1>
                     <p className="text-slate-500">Welcome back, Admin</p>
                 </div>
-                <div className="flex gap-2">
-                    <button className="bg-white border border-slate-200 px-4 py-2 rounded-lg text-sm font-medium text-slate-700 shadow-sm">Export Data</button>
-                </div>
+
             </div>
 
             {/* Stats Cards */}

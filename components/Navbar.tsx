@@ -67,7 +67,7 @@ export function Navbar() {
                     <div className="bg-primary-600 p-1.5 rounded-lg">
                         <TestTube2 className="h-6 w-6 text-white" />
                     </div>
-                    <span className="hidden font-bold sm:inline-block text-xl tracking-tight text-primary-900">
+                    <span className="font-bold text-xl tracking-tight text-primary-900">
                         Vitals <span className="text-primary-600">Lab</span>
                     </span>
                 </Link>
@@ -111,16 +111,16 @@ export function Navbar() {
 
             {/* Mobile Menu */}
             {isOpen && (
-                <div className="md:hidden border-t p-4 bg-white shadow-lg absolute w-full left-0">
-                    <div className="flex flex-col space-y-4">
+                <div className="md:hidden fixed top-16 left-0 w-full bg-white border-b shadow-lg z-40 max-h-[calc(100vh-4rem)] overflow-y-auto">
+                    <div className="flex flex-col p-4 space-y-4">
                         {filteredLinks.map((link) => (
                             <Link
                                 key={link.href}
                                 href={link.href}
                                 onClick={() => setIsOpen(false)}
                                 className={cn(
-                                    "text-sm font-medium transition-colors hover:text-primary-600",
-                                    pathname === link.href ? "text-primary-600" : "text-slate-600"
+                                    "text-base font-medium transition-colors px-2 py-1 rounded-md hover:bg-slate-50",
+                                    pathname === link.href ? "text-primary-600 bg-primary-50" : "text-slate-600"
                                 )}
                             >
                                 {link.label}
@@ -128,15 +128,15 @@ export function Navbar() {
                         ))}
                         {isAuthenticated ? (
                             <>
-                                <Link href="/book" onClick={() => setIsOpen(false)} className="bg-primary-600 text-white px-4 py-2 rounded-md font-medium text-sm hover:bg-primary-700 transition-colors text-center">
+                                <Link href="/book" onClick={() => setIsOpen(false)} className="bg-primary-600 text-white px-4 py-3 rounded-md font-medium text-sm hover:bg-primary-700 transition-colors text-center w-full">
                                     Book Home Collection
                                 </Link>
-                                <button onClick={handleLogout} className="text-red-600 font-medium text-sm flex items-center justify-center gap-2 py-2">
+                                <button onClick={handleLogout} className="text-red-600 font-medium text-sm flex items-center justify-center gap-2 py-3 w-full border border-slate-200 rounded-md hover:bg-slate-50">
                                     <LogOut className="h-4 w-4" /> Logout
                                 </button>
                             </>
                         ) : (
-                            <Link href="/login" onClick={() => setIsOpen(false)} className="bg-primary-600 text-white px-4 py-2 rounded-md font-medium text-sm hover:bg-primary-700 transition-colors text-center">
+                            <Link href="/login" onClick={() => setIsOpen(false)} className="bg-primary-600 text-white px-4 py-3 rounded-md font-medium text-sm hover:bg-primary-700 transition-colors text-center w-full">
                                 Sign In
                             </Link>
                         )}

@@ -9,7 +9,8 @@ import {
     Settings,
     LogOut,
     Menu,
-    X
+    X,
+    FlaskConical
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -30,6 +31,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     const menuItems = [
         { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
         { href: "/admin/patients", label: "Patients", icon: Users },
+        { href: "/admin/tests", label: "Tests", icon: FlaskConical },
         { href: "/admin/settings", label: "Settings", icon: Settings },
     ];
 
@@ -111,9 +113,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 </button>
             </div>
 
+            {/* Mobile Sidebar Overlay */}
+            {isMobileMenuOpen && (
+                <div
+                    className="fixed inset-0 bg-black/50 z-40 md:hidden"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                />
+            )}
+
             {/* Sidebar */}
             <aside className={cn(
-                "w-64 bg-slate-900 text-white fixed h-full z-40 transition-transform duration-300 md:translate-x-0 pt-16 md:pt-0",
+                "w-64 bg-slate-900 text-white fixed h-full z-50 transition-transform duration-300 md:translate-x-0 pt-16 md:pt-0",
                 isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
             )}>
                 <div className="p-6 hidden md:block">

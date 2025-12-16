@@ -2,9 +2,10 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { CheckCircle2, ChevronRight, MapPin, Calendar as CalendarIcon, User, TestTube2, AlertCircle } from "lucide-react";
-import { POPULAR_TESTS, HEALTH_PACKAGES, ROUTINE_PATHOLOGY_TESTS, SITE_CONFIG } from "@/lib/data";
+import { CheckCircle2, ChevronRight, User, TestTube2, AlertCircle } from "lucide-react";
+import { SITE_CONFIG } from "@/lib/data";
 import { cn } from "@/lib/utils";
+import { useTests } from "@/hooks/useTests";
 
 // Types
 type BookingStep = 1 | 2 | 3 | 4;
@@ -40,12 +41,15 @@ const INITIAL_DATA: FormData = {
 function BookingForm() {
     const searchParams = useSearchParams();
     const router = useRouter();
+    const { tests, loading: testsLoading } = useTests();
     const [step, setStep] = useState<BookingStep>(1);
     const [formData, setFormData] = useState<FormData>(INITIAL_DATA);
     const [loading, setLoading] = useState(false);
 
     // Load initial test from URL
     useEffect(() => {
+        if (testsLoading) return;
+
         const testId = searchParams.get("test");
         const packageId = searchParams.get("package");
 
@@ -54,7 +58,7 @@ function BookingForm() {
         } else if (packageId) {
             setFormData((prev) => ({ ...prev, testId: packageId, testType: "package" }));
         }
-    }, [searchParams]);
+    }, [searchParams, testsLoading]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -64,23 +68,21 @@ function BookingForm() {
     const nextStep = () => setStep((prev) => Math.min(prev + 1, 4) as BookingStep);
     const prevStep = () => setStep((prev) => Math.max(prev - 1, 1) as BookingStep);
 
+    // Helper to find test in the dynamic list
+    const getSelectedTest = () => {
+        if (!formData.testId) return null;
+        return tests.find(t => t.id === formData.testId);
+    };
+
     const getSelectedTestName = () => {
-        if (!formData.testId) return "No Test Selected";
-        if (formData.testType === "test") {
-            const test = POPULAR_TESTS.find((t) => t.id === formData.testId) || ROUTINE_PATHOLOGY_TESTS.find((t) => t.id === formData.testId);
-            return test?.name || "Unknown Test";
-        }
-        return HEALTH_PACKAGES.find((p) => p.id === formData.testId)?.name || "Unknown Package";
+        const test = getSelectedTest();
+        return test ? test.name : "Unknown Selection";
     };
 
     const getSelectedTestPrice = () => {
-        if (!formData.testId) return 0;
-        if (formData.testType === "test") {
-            const test = POPULAR_TESTS.find((t) => t.id === formData.testId) || ROUTINE_PATHOLOGY_TESTS.find((t) => t.id === formData.testId);
-            return test?.price || 0;
-        }
-        return HEALTH_PACKAGES.find((p) => p.id === formData.testId)?.price || 0;
-    }
+        const test = getSelectedTest();
+        return test ? test.price : 0;
+    };
 
     const handleSubmit = async () => {
         setLoading(true);
@@ -225,7 +227,7 @@ function BookingForm() {
                                 <div>
                                     <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wide mb-3">Popular Tests</h3>
                                     <div className="space-y-3">
-                                        {POPULAR_TESTS.map(test => (
+                                        {tests.filter(t => t.category === 'Popular').map(test => (
                                             <div
                                                 key={test.id}
                                                 onClick={() => setFormData(prev => ({ ...prev, testId: test.id, testType: "test" }))}
@@ -245,7 +247,7 @@ function BookingForm() {
                                 <div>
                                     <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wide mb-3 mt-6">Health Packages</h3>
                                     <div className="space-y-3">
-                                        {HEALTH_PACKAGES.map(pkg => (
+                                        {tests.filter(t => t.category === 'Package').map(pkg => (
                                             <div
                                                 key={pkg.id}
                                                 onClick={() => setFormData(prev => ({ ...prev, testId: pkg.id, testType: "package" }))}
@@ -253,11 +255,13 @@ function BookingForm() {
                                             >
                                                 <div>
                                                     <h4 className="font-semibold text-slate-900">{pkg.name}</h4>
-                                                    <p className="text-xs text-slate-500">{pkg.description} ({pkg.includes.length} tests)</p>
+                                                    <p className="text-xs text-slate-500">{pkg.description} ({pkg.includes?.length || 0} tests)</p>
                                                 </div>
                                                 <div className="text-right">
                                                     <span className="block font-bold text-slate-700">₹{pkg.price}</span>
-                                                    <span className="text-xs text-slate-400 line-through">₹{pkg.originalPrice}</span>
+                                                    {pkg.originalPrice && (
+                                                        <span className="text-xs text-slate-400 line-through">₹{pkg.originalPrice}</span>
+                                                    )}
                                                 </div>
                                             </div>
                                         ))}
@@ -268,7 +272,7 @@ function BookingForm() {
                                 <div>
                                     <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wide mb-3 mt-6">Routine Pathology</h3>
                                     <div className="space-y-3">
-                                        {ROUTINE_PATHOLOGY_TESTS.map(test => (
+                                        {tests.filter(t => t.category === 'Routine').map(test => (
                                             <div
                                                 key={test.id}
                                                 onClick={() => setFormData(prev => ({ ...prev, testId: test.id, testType: "test" }))}

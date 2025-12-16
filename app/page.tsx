@@ -1,9 +1,21 @@
+"use client";
+
 import Link from "next/link";
 import { ArrowRight, CheckCircle2, FlaskConical, Timer, ShieldCheck } from "lucide-react";
-import { SITE_CONFIG, POPULAR_TESTS, HEALTH_PACKAGES } from "@/lib/data";
+import { SITE_CONFIG } from "@/lib/data";
+import { useTests } from "@/hooks/useTests";
 import { cn } from "@/lib/utils";
 
 export default function Home() {
+  const { tests, loading } = useTests();
+
+  const popularTests = tests.filter(t => t.category === "Popular").slice(0, 6);
+  const healthPackages = tests.filter(t => t.category === "Package");
+
+  if (loading) {
+    return <div className="min-h-screen flex justify-center items-center">Loading...</div>;
+  }
+
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
@@ -72,15 +84,17 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {POPULAR_TESTS.slice(0, 6).map((test) => (
+            {popularTests.map((test) => (
               <div key={test.id} className="group relative rounded-2xl border border-slate-100 bg-white p-6 shadow-sm transition-all hover:shadow-md hover:border-primary-100 flex flex-col">
                 <div className="flex items-center justify-between mb-4">
                   <div className="h-10 w-10 rounded-full bg-primary-50 flex items-center justify-center">
                     <FlaskConical className="h-5 w-5 text-primary-600" />
                   </div>
-                  <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-700">
-                    {test.sampleType}
-                  </span>
+                  {test.sampleType && (
+                    <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-700">
+                      {test.sampleType}
+                    </span>
+                  )}
                 </div>
                 <h3 className="text-lg font-semibold text-slate-900 mb-2 group-hover:text-primary-700 transition-colors">
                   {test.name}
@@ -114,22 +128,26 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {HEALTH_PACKAGES.map((pkg) => (
+            {healthPackages.map((pkg) => (
               <div key={pkg.id} className="relative rounded-2xl bg-white p-8 shadow-sm ring-1 ring-slate-200 transition-all hover:shadow-lg hover:scale-[1.02] flex flex-col">
                 <h3 className="text-xl font-bold text-slate-900">{pkg.name}</h3>
                 <p className="mt-2 text-slate-500 text-sm">{pkg.description}</p>
                 <div className="mt-6 flex items-baseline gap-x-2">
                   <span className="text-4xl font-bold tracking-tight text-slate-900">₹{pkg.price}</span>
-                  <span className="text-sm text-slate-400 line-through">₹{pkg.originalPrice}</span>
+                  {pkg.originalPrice && (
+                    <span className="text-sm text-slate-400 line-through">₹{pkg.originalPrice}</span>
+                  )}
                 </div>
-                <ul className="mt-6 space-y-3 text-sm text-slate-600 flex-grow">
-                  {pkg.includes.map((item, idx) => (
-                    <li key={idx} className="flex gap-x-3">
-                      <CheckCircle2 className="h-5 w-5 flex-none text-primary-600" aria-hidden="true" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
+                {pkg.includes && (
+                  <ul className="mt-6 space-y-3 text-sm text-slate-600 flex-grow">
+                    {pkg.includes.map((item, idx) => (
+                      <li key={idx} className="flex gap-x-3">
+                        <CheckCircle2 className="h-5 w-5 flex-none text-primary-600" aria-hidden="true" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                )}
                 <Link
                   href={`/book?package=${pkg.id}`}
                   className="mt-8 block w-full rounded-md bg-primary-600 px-3 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-primary-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600"

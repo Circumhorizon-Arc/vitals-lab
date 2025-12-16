@@ -14,9 +14,18 @@ function MyAppointmentsContent() {
     const isNew = searchParams.get("new");
 
     useEffect(() => {
-        const saved = localStorage.getItem("bookings");
-        if (saved) {
-            setBookings(JSON.parse(saved));
+        const savedBookings = JSON.parse(localStorage.getItem("bookings") || "[]");
+        const userStr = localStorage.getItem("user");
+
+        if (userStr) {
+            const user = JSON.parse(userStr);
+            console.log("Current User:", user); // Debug log
+            // Filter bookings for the logged-in user's phone number
+            const userBookings = savedBookings.filter((b: any) => b.phone === user.phone);
+            setBookings(userBookings);
+        } else {
+            // If no user is logged in, show nothing (or redirect, but component handles display)
+            setBookings([]);
         }
     }, []);
 
