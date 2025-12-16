@@ -70,15 +70,15 @@ export default function AdminPage() {
 
             {/* Bookings Table */}
             <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
-                <div className="p-6 border-b border-slate-100 flex justify-between items-center">
+                <div className="p-6 border-b border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <h3 className="font-bold text-slate-900 text-lg">Recent Bookings</h3>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
                         {["All", "Confirmed", "Sample Collected", "Report Ready"].map(s => (
                             <button
                                 key={s}
                                 onClick={() => setFilterStatus(s)}
                                 className={cn(
-                                    "px-3 py-1 rounded-full text-xs font-medium transition-colors",
+                                    "px-3 py-1 rounded-full text-xs font-medium transition-colors whitespace-nowrap",
                                     filterStatus === s ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                                 )}
                             >
@@ -88,15 +88,15 @@ export default function AdminPage() {
                     </div>
                 </div>
                 <div className="overflow-x-auto">
-                    <table className="w-full text-sm text-left">
+                    <table className="w-full text-sm text-left min-w-[800px]">
                         <thead className="bg-slate-50 text-slate-500 font-medium">
                             <tr>
-                                <th className="px-6 py-4">ID</th>
-                                <th className="px-6 py-4">Patient</th>
-                                <th className="px-6 py-4">Test/Package</th>
-                                <th className="px-6 py-4">Date & Time</th>
-                                <th className="px-6 py-4">Status</th>
-                                <th className="px-6 py-4">Actions</th>
+                                <th className="px-4 md:px-6 py-4 whitespace-nowrap">ID</th>
+                                <th className="px-4 md:px-6 py-4 whitespace-nowrap">Patient</th>
+                                <th className="px-4 md:px-6 py-4 whitespace-nowrap">Test/Package</th>
+                                <th className="px-4 md:px-6 py-4 whitespace-nowrap">Date & Time</th>
+                                <th className="px-4 md:px-6 py-4 whitespace-nowrap">Status</th>
+                                <th className="px-4 md:px-6 py-4 whitespace-nowrap">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100">
@@ -109,17 +109,17 @@ export default function AdminPage() {
                             ) : (
                                 filteredBookings.map((booking) => (
                                     <tr key={booking.id} className="hover:bg-slate-50 transition-colors">
-                                        <td className="px-6 py-4 font-medium text-slate-900">#{booking.id}</td>
-                                        <td className="px-6 py-4">
+                                        <td className="px-4 md:px-6 py-4 font-medium text-slate-900 whitespace-nowrap">#{booking.id}</td>
+                                        <td className="px-4 md:px-6 py-4 whitespace-nowrap">
                                             <div className="font-medium text-slate-900">{booking.patientName}</div>
                                             <div className="text-xs text-slate-500">{booking.phone}</div>
                                         </td>
-                                        <td className="px-6 py-4">{booking.testName}</td>
-                                        <td className="px-6 py-4">
+                                        <td className="px-4 md:px-6 py-4 whitespace-nowrap">{booking.testName}</td>
+                                        <td className="px-4 md:px-6 py-4 whitespace-nowrap">
                                             <div>{booking.date}</div>
                                             <div className="text-xs text-slate-500">{booking.timeSlot}</div>
                                         </td>
-                                        <td className="px-6 py-4">
+                                        <td className="px-4 md:px-6 py-4 whitespace-nowrap">
                                             <span className={cn(
                                                 "px-2 py-1 rounded-full text-xs font-medium",
                                                 booking.status === "Report Ready" ? "bg-green-100 text-green-700" :
@@ -129,7 +129,7 @@ export default function AdminPage() {
                                                 {booking.status}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4">
+                                        <td className="px-4 md:px-6 py-4 whitespace-nowrap">
                                             <select
                                                 value={booking.status}
                                                 onChange={(e) => updateStatus(booking.id, e.target.value)}
